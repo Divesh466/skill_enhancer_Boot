@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Table(name="StudentBatch")
 public class StudentBatchEntity {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private Double fees;
 	private Long studentId;

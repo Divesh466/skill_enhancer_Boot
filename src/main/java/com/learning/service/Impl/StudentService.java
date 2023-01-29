@@ -5,11 +5,14 @@ import com.learning.entity.StudentEntity;
 import com.learning.model.StudentModel;
 import com.learning.repository.StudentRepository;
 import com.learning.service.CommonService;
+import com.learning.utility.StudentReader;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -19,6 +22,7 @@ public class StudentService implements CommonService<StudentModel, Long> {
     private final StudentRepository studentRepository;
     private final ModelMapper modelMapper;
 
+    private final StudentReader studentReader;
 
     @Override
     public List<StudentModel> getAllRecords() {
@@ -127,6 +131,18 @@ public class StudentService implements CommonService<StudentModel, Long> {
             studentRepository.save(studentEntity);
         }
         return record;
+    }
+
+    public void saveExcelFile(MultipartFile file) {
+        //check that file is of excel type or not
+        if (file.getContentType().equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
+            try {
+                List<StudentEntity> studentEntityList = studentReader.getStudentObjects(file.getInputStream());
+                studentRepository.saveAll(studentEntityList);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private Comparator<StudentEntity> findSuitableComparator(String sortBy) {
